@@ -18,7 +18,7 @@ public class MainPizza : MonoBehaviour
 
         Vector2[] vertices;
         ushort[] triangles;
-        CircleMesh.GetCircleMeshData(pizzaSprite, 40, out vertices, out triangles);
+        CircleMesh.CalculateCircleMeshData(pizzaSprite, 40, out vertices, out triangles);
 
         pizzaSprite.OverrideGeometry(vertices, triangles);
         RecalculateCollider();

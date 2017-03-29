@@ -15,6 +15,8 @@ public class InputScissors : MonoBehaviour
     private SpriteRenderer spriteRend;
     private Material material;
 
+    private bool canCastLine = true;
+
     // Use this for initialization
     void Start()
     {
@@ -27,6 +29,8 @@ public class InputScissors : MonoBehaviour
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 0f, 9f);
         if (Input.GetMouseButtonDown(0))
         {
+            canCastLine = CheckCanCastLine(mouseWorldPos);
+
             lineRend.SetPosition(0, mouseWorldPos);
             lineRend.SetPosition(1, mouseWorldPos);
         }
@@ -38,9 +42,14 @@ public class InputScissors : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(0))
         {
-            CastLine(lineRend.GetPosition(0), lineRend.GetPosition(1));
+            canCastLine = canCastLine == true ? CheckCanCastLine(mouseWorldPos) : canCastLine;
+            if (canCastLine)
+                CastLine(lineRend.GetPosition(0), lineRend.GetPosition(1));
+
             lineRend.SetPosition(0, mouseWorldPos);
             lineRend.SetPosition(1, mouseWorldPos);
+
+            canCastLine = true;
         }
     }
 
@@ -58,5 +67,15 @@ public class InputScissors : MonoBehaviour
                 successfulInput.Invoke(hits[0].point, hits[1].point);
             }
         }
+    }
+
+    private bool CheckCanCastLine(Vector2 mouseWorldPos)
+    {
+        Collider2D col = Physics2D.OverlapPoint(mouseWorldPos, pizzaMask);
+
+        if (col)
+            return false;
+        else
+            return true;
     }
 }

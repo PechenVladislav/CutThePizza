@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CircleMesh
 {
-    public static void GetCircleMeshData(Sprite pizzaSprite, int edges, out Vector2[] vertices, out ushort[] triangles)
+    public static void CalculateCircleMeshData(Sprite pizzaSprite, int edges, out Vector2[] vertices, out ushort[] triangles)
     {
         float radius = pizzaSprite.bounds.extents.x;
         vertices = new Vector2[edges];
@@ -29,17 +29,15 @@ public class CircleMesh
     {
         for (int i = 0; i < vertices.Length; i++)
         {
-            vertices[i].x = Mathf.Clamp(
-                (vertices[i].x - pizzaSprite.bounds.center.x -
+            float worldToSpriteX = (vertices[i].x - pizzaSprite.bounds.center.x -
                     (pizzaSprite.textureRectOffset.x / pizzaSprite.texture.width) + pizzaSprite.bounds.extents.x) /
-                    (2.0f * pizzaSprite.bounds.extents.x) * pizzaSprite.rect.width,
-                0.0f, pizzaSprite.rect.width);
+                    (2.0f * pizzaSprite.bounds.extents.x) * pizzaSprite.rect.width;
+            vertices[i].x = Mathf.Clamp(worldToSpriteX, 0.0f, pizzaSprite.rect.width);
 
-            vertices[i].y = Mathf.Clamp(
-                (vertices[i].y - pizzaSprite.bounds.center.y -
+            float worldToSpriteY = (vertices[i].y - pizzaSprite.bounds.center.y -
                     (pizzaSprite.textureRectOffset.y / pizzaSprite.texture.height) + pizzaSprite.bounds.extents.y) /
-                    (2.0f * pizzaSprite.bounds.extents.y) * pizzaSprite.rect.height,
-                0.0f, pizzaSprite.rect.height);
+                    (2.0f * pizzaSprite.bounds.extents.y) * pizzaSprite.rect.height;
+            vertices[i].y = Mathf.Clamp(worldToSpriteY, 0.0f, pizzaSprite.rect.height);
         }
     }
 
@@ -50,7 +48,6 @@ public class CircleMesh
 
         List<Vector2> verticesFisrtSide = new List<Vector2>();
         List<Vector2> verticesSecondSide = new List<Vector2>();
-
 
 
         int startIndex = GetNumberOfFirstVert(firstPoint, secondPoint, verticesSource);
@@ -67,6 +64,12 @@ public class CircleMesh
         verticesFisrtSide.Add(firstPoint);
         verticesFisrtSide.Add(secondPoint);
 
+        trianglesFirstArray = new ushort[3 * (verticesFisrtSide.Count - 1)];
+        SetTriangles(ref trianglesFirstArray);
+        verticesFirstArray = verticesFisrtSide.ToArray();
+
+        RecalculateVertices(pizzaSprite, ref verticesFirstArray);
+
 
         for (int i = startIndex; i < verticesSource.Count + startIndex; i++)
         {
@@ -80,19 +83,12 @@ public class CircleMesh
         verticesSecondSide.Add(secondPoint);
         verticesSecondSide.Add(firstPoint);
 
-
-        trianglesFirstArray = new ushort[3 * (verticesFisrtSide.Count - 1)];
-        SetTriangles(ref trianglesFirstArray);
-        verticesFirstArray = verticesFisrtSide.ToArray();
-
         trianglesSecondArray = new ushort[3 * (verticesSecondSide.Count - 1)];
         SetTriangles(ref trianglesSecondArray);
         verticesSecondArray = verticesSecondSide.ToArray();
 
-        RecalculateVertices(pizzaSprite, ref verticesFirstArray);
         RecalculateVertices(pizzaSprite, ref verticesSecondArray);
 
-        //pizzaSprite.OverrideGeometry(verticesArray, trianglesArray);
     }
 
     private static int SelectSide(Vector2 from, Vector2 to, Vector2 point)      //с какой стороны от линии находятся треугольники
