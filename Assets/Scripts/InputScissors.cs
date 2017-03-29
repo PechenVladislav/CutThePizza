@@ -59,30 +59,4 @@ public class InputScissors : MonoBehaviour
             }
         }
     }
-
-    //private void OnDrawGizmos()
-    //{
-    //    if (positions != null && positions.Length == 2)
-    //    {
-    //        Gizmos.color = Color.red;
-    //        Gizmos.DrawWireSphere(positions[0], 0.2f);
-
-    //        Gizmos.color = Color.blue;
-    //        Gizmos.DrawWireSphere(positions[1], 0.2f);
-    //    }
-
-    //    if (spriteRend != null)
-    //    {
-    //        Sprite spr = spriteRend.sprite;
-    //        Vector2[] vertices = spr.vertices;
-
-    //        for (int i = 0; i < vertices.Length - 1; i++)
-    //        {
-    //            Gizmos.DrawLine(vertices[i], vertices[i + 1]);
-    //        }
-    //        Gizmos.color = Color.red;
-
-    //        Gizmos.DrawLine(vertices[vertices.Length - 1], vertices[0]);
-    //    }
-    //}
 }
